@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 
 const features = [
-  { icon: '🧠', tag: 'NLP Engine', title: 'Plain English Summaries', desc: 'Claude AI reads the full paper and distills it into clear, jargon-free language anyone can understand — no PhD required.' },
+  { icon: '🧠', tag: 'NLP Engine', title: 'Plain English Summaries', desc: 'Gemini AI reads the full paper and distills it into clear, jargon-free language anyone can understand — no PhD required.' },
   { icon: '🎯', tag: 'Extraction', title: 'Key Contributions', desc: 'Automatically identifies and highlights what the paper actually contributes to its field, saving hours of reading.' },
   { icon: '💬', tag: 'RAG Q&A', title: 'Ask Anything', desc: 'Chat directly with the paper. Ask specific questions and get accurate answers grounded in the paper\'s actual content.' },
   { icon: '🃏', tag: 'Memory', title: 'AI Flashcards', desc: 'Generate interactive flashcards from key terms and concepts. Flip to reveal definitions and study smarter.' },

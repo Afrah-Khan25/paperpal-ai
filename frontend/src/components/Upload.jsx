@@ -18,7 +18,7 @@ export default function Upload({ onResult }) {
     const form = new FormData()
     form.append('file', file)
     try {
-      const res = await axios.post('http://localhost:8000/api/upload', form, {
+      const res = await axios.post('/api/upload', form, {
         headers: { 'Content-Type': 'multipart/form-data' }
       })
       onResult(res.data)
@@ -39,6 +39,7 @@ export default function Upload({ onResult }) {
 
   return (
     <section id="upload" style={{ padding: '6rem 2rem', maxWidth: '700px', margin: '0 auto' }}>
+      <span id="demo" style={{ display: 'block', marginTop: '-5rem', paddingTop: '5rem' }} aria-hidden="true" />
       <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
         <span className="section-label">Get Started</span>
         <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.8rem)', fontWeight: 700, marginBottom: '1rem' }}>
@@ -78,7 +79,7 @@ export default function Upload({ onResult }) {
               Analyzing {fileName}...
             </p>
             <p style={{ color: 'var(--cream-dim)', fontSize: '0.8rem', marginTop: '0.5rem' }}>
-              Claude is reading your paper
+              Gemini AI is reading your paper
             </p>
           </div>
         ) : (
@@ -101,9 +102,10 @@ export default function Upload({ onResult }) {
       </div>
 
       {error && (
-        <div style={{
+        <div         style={{
           marginTop: '1rem', padding: '0.75rem 1rem',
-          background: 'rgba(207,102,121,0.1)', border: '1px solid rgba(207,102,121,0.3)',
+          background: 'color-mix(in srgb, var(--red) 10%, transparent)',
+          border: '1px solid color-mix(in srgb, var(--red) 30%, transparent)',
           color: 'var(--red)', fontFamily: 'DM Mono, monospace', fontSize: '0.8rem'
         }}>
           ⚠ {error}

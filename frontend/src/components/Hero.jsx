@@ -39,7 +39,7 @@ export default function Hero({ onCTAClick }) {
         </p>
 
         <p style={{ fontSize: '1rem', color: 'var(--cream-dim)', maxWidth: '560px', margin: '0 auto 3rem', lineHeight: 1.8, fontWeight: 300 }}>
-          PaperPal AI transforms dense academic papers into plain English summaries, key insights, flashcards, and an interactive Q&A — powered by Claude AI.
+          PaperPal AI transforms dense academic papers into plain English summaries, key insights, flashcards, and an interactive Q&A — powered by Gemini AI.
         </p>
 
         <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>

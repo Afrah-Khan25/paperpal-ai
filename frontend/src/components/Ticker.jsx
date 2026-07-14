@@ -2,7 +2,7 @@ export default function Ticker() {
   const items = [
     'PDF Intelligence', 'Plain English Summaries', 'Key Contributions',
     'Limitations Analysis', 'AI Flashcards', 'Interactive Q&A',
-    'Methodology Explainer', 'Difficulty Scoring', 'Related Topics', 'RAG Architecture'
+    'Methodology Explainer', 'Difficulty Scoring'
   ]
   const repeated = [...items, ...items]
 

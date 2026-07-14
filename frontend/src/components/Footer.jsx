@@ -14,7 +14,7 @@ export default function Footer() {
       </p>
       <div className="gold-line" style={{ maxWidth: '300px', margin: '0 auto 1.5rem' }} />
       <p style={{ fontFamily: 'DM Mono, monospace', fontSize: '0.65rem', color: 'var(--ink-4)', letterSpacing: '0.08em' }}>
-        © 2025 PAPERPAL AI · BUILT WITH CLAUDE AI + FASTAPI + REACT
+        © 2025 PAPERPAL AI · BUILT WITH GEMINI AI + FASTAPI + REACT
       </p>
     </footer>
   )

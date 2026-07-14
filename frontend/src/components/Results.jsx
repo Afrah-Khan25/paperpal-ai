@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import axios from 'axios'
 
 function DifficultyBar({ score }) {
-  const color = score < 40 ? '#4CAF7A' : score < 70 ? 'var(--gold)' : 'var(--red)'
+  const color = score < 40 ? 'var(--green)' : score < 70 ? 'var(--gold)' : 'var(--red)'
   const label = score < 40 ? 'Beginner Friendly' : score < 70 ? 'Intermediate' : 'Advanced'
   return (
     <div style={{ marginTop: '0.5rem' }}>
@@ -48,13 +48,20 @@ export default function Results({ data, onReset }) {
   const [loadingCards, setLoadingCards] = useState(false)
   const [flipped, setFlipped] = useState({})
   const [activeTab, setActiveTab] = useState('summary')
+  const answerRef = useRef(null)
+
+  useEffect(() => {
+    if (answer && answerRef.current) {
+      answerRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    }
+  }, [answer])
 
   const askQuestion = async () => {
     if (!question.trim()) return
     setAsking(true)
     setAnswer('')
     try {
-      const res = await axios.post('http://localhost:8000/api/ask', {
+      const res = await axios.post('/api/ask', {
         paper_id: data.paper_id, question
       })
       setAnswer(res.data.answer)
@@ -70,7 +77,7 @@ export default function Results({ data, onReset }) {
     setLoadingCards(true)
     setActiveTab('flashcards')
     try {
-      const res = await axios.get(`http://localhost:8000/api/flashcards/${data.paper_id}`)
+      const res = await axios.get(`/api/flashcards/${data.paper_id}`)
       setFlashcards(res.data.flashcards)
     } catch {
       setFlashcards([{ term: 'Error', definition: 'Could not load flashcards.' }])
@@ -87,8 +94,7 @@ export default function Results({ data, onReset }) {
   ]
 
   return (
-    <section style={{ padding: '3rem 2rem', maxWidth: '900px', margin: '0 auto' }}>
-      {/* Header */}
+    <section className="results-section">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <span className="section-label">Analysis Complete</span>
@@ -96,20 +102,12 @@ export default function Results({ data, onReset }) {
             {data.title}
           </h2>
         </div>
-        <button onClick={onReset} style={{
-          background: 'transparent', border: '1px solid var(--ink-4)', color: 'var(--cream-dim)',
-          padding: '0.5rem 1.2rem', cursor: 'pointer', fontFamily: 'DM Mono, monospace',
-          fontSize: '0.75rem', letterSpacing: '0.08em', transition: 'all 0.2s'
-        }}
-        onMouseEnter={e => e.target.style.borderColor = 'var(--gold-dim)'}
-        onMouseLeave={e => e.target.style.borderColor = 'var(--ink-4)'}
-        >
+        <button onClick={onReset} className="btn-ghost">
           ← New Paper
         </button>
       </div>
 
-      {/* Difficulty + Topics */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
+      <div className="results-grid">
         <Card>
           <CardTitle>Difficulty Score</CardTitle>
           <DifficultyBar score={data.difficulty_score} />
@@ -118,32 +116,24 @@ export default function Results({ data, onReset }) {
           <CardTitle>Related Topics</CardTitle>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
             {data.related_topics.map((t, i) => (
-              <span key={i} style={{
-                fontFamily: 'DM Mono, monospace', fontSize: '0.65rem', padding: '3px 10px',
-                border: '1px solid var(--ink-4)', color: 'var(--cream-dim)',
-                background: 'var(--ink-3)'
-              }}>{t}</span>
+              <span key={i} className="topic-pill">{t}</span>
             ))}
           </div>
         </Card>
       </div>
 
-      {/* Tabs */}
-      <div style={{ display: 'flex', borderBottom: '1px solid var(--ink-4)', marginBottom: '1.5rem', gap: '0' }}>
+      <div className="tab-bar">
         {tabs.map(tab => (
-          <button key={tab.id} onClick={() => { setActiveTab(tab.id); tab.onClick?.() }} style={{
-            background: 'transparent', border: 'none', borderBottom: activeTab === tab.id ? '2px solid var(--gold)' : '2px solid transparent',
-            color: activeTab === tab.id ? 'var(--gold)' : 'var(--cream-dim)',
-            padding: '0.75rem 1.5rem', cursor: 'pointer', fontFamily: 'DM Mono, monospace',
-            fontSize: '0.75rem', letterSpacing: '0.08em', textTransform: 'uppercase',
-            transition: 'all 0.2s', marginBottom: '-1px'
-          }}>
+          <button
+            key={tab.id}
+            onClick={() => { setActiveTab(tab.id); tab.onClick?.() }}
+            className={`tab-btn ${activeTab === tab.id ? 'tab-btn-active' : ''}`}
+          >
             {tab.label}
           </button>
         ))}
       </div>
 
-      {/* Tab Content */}
       {activeTab === 'summary' && (
         <div style={{ display: 'grid', gap: '1rem' }}>
           <Card>
@@ -170,14 +160,8 @@ export default function Results({ data, onReset }) {
       {activeTab === 'contributions' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           {data.key_contributions.map((c, i) => (
-            <div key={i} style={{
-              display: 'flex', gap: '1rem', alignItems: 'flex-start',
-              background: 'var(--ink-2)', border: '1px solid var(--ink-4)',
-              padding: '1.2rem 1.5rem', borderLeft: '3px solid var(--gold)'
-            }}>
-              <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '0.7rem', color: 'var(--gold-dim)', flexShrink: 0, paddingTop: '2px' }}>
-                {String(i + 1).padStart(2, '0')}
-              </span>
+            <div key={i} className="contribution-card">
+              <span className="contribution-num">{String(i + 1).padStart(2, '0')}</span>
               <p style={{ color: 'var(--cream)', lineHeight: 1.7, fontSize: '0.95rem' }}>{c}</p>
             </div>
           ))}
@@ -187,44 +171,28 @@ export default function Results({ data, onReset }) {
       {activeTab === 'qa' && (
         <Card>
           <CardTitle>Ask Anything About This Paper</CardTitle>
-          <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1rem' }}>
+          <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1rem' }} className="qa-input-row">
             <input
               value={question}
               onChange={e => setQuestion(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && askQuestion()}
               placeholder="e.g. What dataset was used? What is the main novelty?"
-              style={{
-                flex: 1, background: 'var(--ink-3)', border: '1px solid var(--ink-4)',
-                color: 'var(--cream)', padding: '0.75rem 1rem', fontFamily: 'Outfit, sans-serif',
-                fontSize: '0.9rem', outline: 'none'
-              }}
+              className="qa-input"
             />
-            <button onClick={askQuestion} disabled={asking} style={{
-              background: asking ? 'var(--ink-4)' : 'var(--gold)', color: 'var(--ink)',
-              border: 'none', padding: '0.75rem 1.5rem', cursor: asking ? 'not-allowed' : 'pointer',
-              fontWeight: 600, fontFamily: 'Outfit, sans-serif', fontSize: '0.9rem', transition: 'all 0.2s'
-            }}>
+            <button onClick={askQuestion} disabled={asking} className="btn-gold">
               {asking ? '...' : 'Ask →'}
             </button>
           </div>
           {answer && (
-            <div style={{
-              background: 'var(--ink-3)', padding: '1.2rem', borderLeft: '2px solid var(--gold)',
-              color: 'var(--cream)', lineHeight: 1.8, fontSize: '0.9rem'
-            }}>
+            <div ref={answerRef} className="qa-answer">
               {answer}
             </div>
           )}
           <div style={{ marginTop: '1rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
             {['What is the main contribution?', 'What dataset was used?', 'What are the limitations?'].map(q => (
-              <button key={q} onClick={() => setQuestion(q)} style={{
-                background: 'transparent', border: '1px solid var(--ink-4)', color: 'var(--cream-dim)',
-                padding: '4px 12px', cursor: 'pointer', fontFamily: 'DM Mono, monospace',
-                fontSize: '0.65rem', letterSpacing: '0.05em', transition: 'all 0.2s'
-              }}
-              onMouseEnter={e => { e.target.style.borderColor = 'var(--gold-dim)'; e.target.style.color = 'var(--gold)' }}
-              onMouseLeave={e => { e.target.style.borderColor = 'var(--ink-4)'; e.target.style.color = 'var(--cream-dim)' }}
-              >{q}</button>
+              <button key={q} onClick={() => setQuestion(q)} className="suggested-q">
+                {q}
+              </button>
             ))}
           </div>
         </Card>
@@ -234,30 +202,24 @@ export default function Results({ data, onReset }) {
         <div>
           {loadingCards ? (
             <div style={{ textAlign: 'center', padding: '3rem' }}>
-              <div style={{
-                width: '32px', height: '32px', border: '2px solid var(--ink-4)',
-                borderTop: '2px solid var(--gold)', borderRadius: '50%',
-                animation: 'spin 0.8s linear infinite', margin: '0 auto 1rem'
-              }} />
+              <div className="spinner" />
               <p style={{ color: 'var(--cream-dim)', fontFamily: 'DM Mono, monospace', fontSize: '0.8rem' }}>Generating flashcards...</p>
             </div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem' }}>
+            <div className="flashcard-grid">
               {flashcards.map((card, i) => (
-                <div key={i} onClick={() => setFlipped(f => ({ ...f, [i]: !f[i] }))} style={{
-                  background: flipped[i] ? 'rgba(201,168,76,0.08)' : 'var(--ink-2)',
-                  border: `1px solid ${flipped[i] ? 'var(--gold-dim)' : 'var(--ink-4)'}`,
-                  padding: '1.5rem', cursor: 'pointer', minHeight: '120px',
-                  display: 'flex', flexDirection: 'column', justifyContent: 'center',
-                  transition: 'all 0.25s', borderRadius: '2px'
-                }}>
+                <div
+                  key={i}
+                  onClick={() => setFlipped(f => ({ ...f, [i]: !f[i] }))}
+                  className={`flashcard ${flipped[i] ? 'flashcard-flipped' : ''}`}
+                >
                   {flipped[i] ? (
                     <p style={{ color: 'var(--cream)', lineHeight: 1.7, fontSize: '0.9rem' }}>{card.definition}</p>
                   ) : (
                     <>
-                      <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '0.6rem', color: 'var(--gold-dim)', marginBottom: '0.5rem' }}>TERM</span>
+                      <span className="flashcard-label">TERM</span>
                       <p style={{ color: 'var(--gold)', fontWeight: 600, fontSize: '1rem' }}>{card.term}</p>
-                      <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '0.6rem', color: 'var(--cream-dim)', marginTop: '0.75rem' }}>click to reveal →</span>
+                      <span className="flashcard-hint">click to reveal →</span>
                     </>
                   )}
                 </div>

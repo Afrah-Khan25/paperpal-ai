@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import Nav from './components/Nav'
 import Hero from './components/Hero'
 import Ticker from './components/Ticker'
@@ -11,7 +11,6 @@ import './index.css'
 
 export default function App() {
   const [result, setResult] = useState(null)
-  const uploadRef = useRef()
 
   const scrollToUpload = () => {
     document.getElementById('upload')?.scrollIntoView({ behavior: 'smooth' })
